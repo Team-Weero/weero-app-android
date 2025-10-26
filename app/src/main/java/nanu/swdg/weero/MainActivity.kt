@@ -1,16 +1,17 @@
 package nanu.swdg.weero
 
 import android.os.Bundle
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.viewinterop.AndroidView
 import nanu.swdg.weero.ui.theme.WeeroTeacherApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +21,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             WeeroTeacherApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                    WebViewScreen(
+                        url = "file:///android_asset/index.html",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        activity = this
                     )
                 }
             }
@@ -31,17 +35,23 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
+fun WebViewScreen(url: String, modifier: Modifier = Modifier, activity: ComponentActivity) {
+    AndroidView(
+        factory = { context ->
+            WebView(context).apply {
+                webViewClient = WebViewClient()
+                settings.apply {
+                    javaScriptEnabled = true
+                    domStorageEnabled = true
+                    allowFileAccess = true
+                }
+
+                val webAppInterface = WebAppInterface(activity, this)
+                addJavascriptInterface(webAppInterface, "Android")
+
+                loadUrl(url)
+            }
+        },
         modifier = modifier
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    WeeroTeacherApplicationTheme {
-        Greeting("Android")
-    }
 }
