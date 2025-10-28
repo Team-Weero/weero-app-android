@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
             WeeroTeacherApplicationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     WebViewScreen(
-                        url = "file:///android_asset/index.html",
+                        url = "https://weero-app.pages.dev/",
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding),
